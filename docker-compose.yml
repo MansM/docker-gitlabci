@@ -1,0 +1,28 @@
+version: "3"
+services:
+  gitlab:
+    build: gitlab
+    hostname: gitlab
+    container_name: gitlab
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    volumes:
+      - ./gitlab/gitlab.rb:/etc/gitlab/gitlab.rb
+    ports:
+      - "80:80"
+      - "10022:22"
+    networks:
+      - gitlabci
+  
+  runner: 
+    build: runner
+    networks:
+      - gitlabci
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  gitlabci:
+    driver: bridge

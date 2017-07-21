@@ -1,0 +1,130 @@
+#!/usr/bin/env ansible-playbook
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: starting gitlab
+      docker_service:
+        project_src: .
+        services:
+          - gitlab
+        state: present
+      delegate_to: localhost
+   
+    - name: check for gitlab running
+      local_action:
+        shell docker inspect --format='{{ '{{' }}json .State.Health.Status {{ '}}' }}' gitlab
+      changed_when: false
+      register: result
+      until: result.stdout.find("healthy") != -1
+      retries: 20
+      delay: 20
+
+    - name: installing packages (pip)
+      pip: name={{ item }} state=present
+      with_items:
+        - pyapi-gitlab
+
+    - name: Create Gitlab Group
+      gitlab_group:
+        server_url: http://gitlab
+        login_user: root
+        login_password: password
+        name: Orchestration
+        path: Orchestration
+        state: present
+
+
+    - name: Create Gitlab project
+      gitlab_project:
+        server_url: http://gitlab
+        login_user: root
+        login_password: password
+        name: runnerproject
+        group: Orchestration
+        description: Testing Runners
+        issues_enabled: true
+        wiki_enabled: True
+        snippets_enabled: True
+        state: present
+      register: result
+
+    - name: starting gitlab-runner
+      docker_service:
+        project_src: .
+        services:
+          - runner
+        state: present
+      delegate_to: localhost
+
+    - name: get login token
+      uri:
+        url: http://gitlab/api/v4/session
+        body: "login=root&password=password"
+        return_content: yes
+        follow_redirects: yes
+        method: POST
+        status_code: 200,201
+      register: logindata
+      delegate_to: localhost
+
+    - name: get all runners
+      uri:
+        url: http://gitlab/api/v4/runners/all
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+        return_content: yes
+        follow_redirects: yes
+        method: GET
+        status_code: 200,201
+      register: runnerdata
+      delegate_to: localhost
+
+    - name: register runner
+      shell: docker exec dockergitlabci_runner_1 gitlab-runner register -n
+      delegate_to: localhost
+      when: runnerdata.x_total|int < 1
+
+
+    - name: detect if repo already contains content
+      uri:
+        url: http://gitlab/Orchestration/runnerproject/blob/master/readme.md
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+        return_content: yes
+        follow_redirects: no
+        method: GET
+        status_code: 200,303
+      register: readmedata
+      delegate_to: localhost
+
+    #clean gitlab
+    - name: remove git config
+      file: name="repo/.git" state=absent
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: create git repo
+      shell: git init
+      args:
+        chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: config gitrepo
+      shell: git remote add origin http://root:password@gitlab/Orchestration/runnerproject.git
+      args:
+        chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: create readme.md file
+      file: name="repo/readme.md" state=touch
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: commit & push
+      shell: git add . && git commit -m "initial" && git push -u origin master
+      args:
+        chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303

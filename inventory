@@ -1,0 +1,1 @@
+dockerinst ansible_connection=docker ansible_host=gitlab
