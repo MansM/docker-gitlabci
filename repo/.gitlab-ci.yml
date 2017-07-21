@@ -1,0 +1,10 @@
+stages:
+  - test
+
+tests:
+  image: ruby:2.3
+  stage: test
+  except:
+    - tags
+  script:
+    - /bin/true
