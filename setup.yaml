@@ -128,3 +128,10 @@
         chdir: repo/
       delegate_to: localhost
       when: readmedata.status == 303
+
+    - name: create development branch
+      shell: git checkout -b development
+      args:
+        chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303
