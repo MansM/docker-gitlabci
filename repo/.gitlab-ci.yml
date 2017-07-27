@@ -1,10 +1,21 @@
 stages:
   - test
+  - feature-deploy
 
 tests:
   image: ruby:2.3
   stage: test
   except:
     - tags
+  script:
+    - /bin/true
+
+feature-deploy:
+  image: ruby:2.3
+  stage: feature-deploy
+  only:
+    - /^feature-.*$/
+  except:
+    - branches
   script:
     - /bin/true

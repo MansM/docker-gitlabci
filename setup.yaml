@@ -130,7 +130,14 @@
       when: readmedata.status == 303
 
     - name: create development branch
-      shell: git checkout -b development
+      shell: git checkout -b development && git push --set-upstream origin development
+      args:
+        chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: create feature-X-newthing branch
+      shell: git checkout -b feature-X-newthing && git push --set-upstream origin feature-X-newthing
       args:
         chdir: repo/
       delegate_to: localhost
