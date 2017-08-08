@@ -1,5 +1,8 @@
 stages:
   - test
+  - feature-deploy
+  - dev-deploy
+  - release-deploy
 
 tests:
   image: ruby:2.3
@@ -7,4 +10,35 @@ tests:
   except:
     - tags
   script:
+    - /bin/true
+
+feature-deploy:
+  image: ruby:2.3
+  stage: feature-deploy
+  only:
+    - /^feature-.*$/
+  before_script:
+    - apt install -y git
+  script:
+    - export ENVIRONMENT=$(echo $CI_COMMIT_REF_NAME |grep -Po '(?<=feature-)[^-]*')
+    - echo "deploy naar omgeving ${ENVIRONMENT}"
+    - /bin/true
+
+deploy-dev-branch:
+  image: ruby:2.3
+  stage: dev-deploy
+  only:
+    - development
+  script:
+    - echo "deploy dev branch to test env"
+
+release-deploy:
+  image: ruby:2.3
+  stage: release-deploy
+  only:
+    - /^release-.*$/
+  before_script:
+    - apt install -y git
+  script:
+    - echo "deploy naar omgeving ACC"
     - /bin/true
