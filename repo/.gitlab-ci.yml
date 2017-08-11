@@ -1,8 +1,12 @@
+variables:
+  GIT_SSL_NO_VERIFY: "true"
+
 stages:
   - test
   - feature-deploy
   - dev-deploy
   - release-deploy
+  - tag
 
 tests:
   image: ruby:2.3
@@ -42,3 +46,19 @@ release-deploy:
   script:
     - echo "deploy naar omgeving ACC"
     - /bin/true
+
+gittag:
+  image: ruby:2.3
+  stage: tag
+  only:
+    - master
+  except:
+    - tags
+  before_script:
+    - apt install -y git
+    - chmod 700 setkey.sh
+    - source setkey.sh > /dev/null 2>&1
+  script:
+    - export NEWTAG=$(expr $(git tag --list|sort -n | tail -1) + 1 )
+    - git tag $NEWTAG
+    - git push --tags ssh://git@gitlab:22/Orchestration/runnerproject.git

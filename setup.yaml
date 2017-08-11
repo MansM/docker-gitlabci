@@ -97,6 +97,35 @@
       register: readmedata
       delegate_to: localhost
 
+    #ssh key stuff for auto tagging
+    - name: create ssh key var
+      uri:
+        url: http://gitlab/api/v4/projects/1/variables
+        method: POST
+        body: '{"key":"SSH_PRIVATE_KEY","value":"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBeG05akltMVhsZWxuL2xBOE1YbXc2MHJxMGlvSFpXUmNLbmRSbmJVbGpFc1ZHeG56CjhzSTB6UkJNNDVqT3VrVFI0RFJ3LzlHUGYxbUhBUi8waGRUZ3hqbThiQ1BkcXU0bUNWWTd2bktYaTJudDlKTmEKZFRPZ2Jyb0ZZREVCdll6dVl2ZCtIK0JkTDNjb2lyZjJ5RE5yZWlyaWFWb1BxcnROTnRHQzJUVWxoVUJmUS9vaQpaaW0zUmVUa1VWSmQ5V2V5b1NwRnF3OFNBVWZDc1lqZGJsaWJ4emg1RWUwU2ZuMUJEY3JmUHdCUXlzV1NxN0FzClU1WjVBMFFBY2JnUE5IVW0yd1JmL2trQ2NPcXcvUGdlRDl1YW1hbmpPTUpGVDgvS25NRG51R0d1eEYzMy9TV3kKb2RSSUFrQmgxb0hxMUhWTm9YczZJVFFMYTNkK2IrS000MWtTL1FJREFRQUJBb0lCQUZNVDQxOVFnL0RoalladAp0U1hKbXdhSGtSUjRRQ3gwL2hsUlp6d3QwUkNSaHI2WCtRaFR3cU53QmFEc0l2RGRTemtnKzRZL0NHTDY2b2pRCkJpSFo1RmxaWnNlbnBIQ2gwQTdzcVlxc2swSHRFWkRwK0Y5RlJBL1hsZFNWNy9LYUJGd3UzZ0VlZ0NVVk1FWVQKaXlCNlZxOEpNVTJHUlRUbndnWUhaVTdtNzFSL3h6WVFYbGZsYzl6WWx6Tk5idTlQRE1od3NwbmxOZmdxbTVpOQpqdVlYKzVUNk43WURpMzl3ZExEeEN3c3FzcWZYbC9YcHhxaDhmVk5VRjlCR2loL25rNUlCeVpWNU12ck95NnVDCmpvZGpId1NLd0xNNmVLZ3RGaFlpTUpWR1YvdDR0WG92ZmdtVGhNZkxZc21QeUtRVkoxc0tZMXhCN2pZdVdKK1EKdmNMT3RBRUNnWUVBK1NWV2puZVZHQzBZUEhTMldVaEJxZS9udVpLSVFkOWNWM2VKNTQyVS9DZzYyeVJESE9sVgpiQWMxR3gwSVlCMGtEYkJBNGhzYmwyMlF3RkErS3p3SHFmMUdMNlNKT1lwVU4wQXhxUWI0QndPUVJrTHFCWC8zCmtFQXNWb3hwY1FiYzVPVy9rWTV0bGxkcUFwd0lYMUVIc0dlSnZqd09RcVQ1ODhDZFMzbVgybjBDZ1lFQXkrVG8KZDd2ZEovZVBzVFluY2dtRVY0NHUrMGxtU2hvS0lzWmR3Z1krajI4RVhaRW5QN0VsZXM4Y1RvUGhtd0VGY210NQpMSzNTMk8yWWJOR1IwKy9uR2YxSTVQT083WkZzckErdVBGMHpBbW1uU2ZEb1VScVptZ28vck1aM3lucER6ZHFBCllkRWZ3MWhSK05sMGJoL3ZBblRXWXJLZlM2Ti9TYzNFYm5ITEFvRUNnWUVBdWJKeHZFZzNFVWp6S29SWE1WNmcKeXBlc1lHMXVMNkxhZ2Jyd1IyMElvWlVlb1IxN0JENkowN1hmaUREd2dDcllKM2U2Tkl5OTJQVHFFZHo5S1Y1WgozQUtSNElyRFdPYllkRUhkZ2IxVyttdFdpbmZ2VTJBWTFpUnVwNmVLSTV0WTR5YTJ6VGVhU0pjb3hYOGs0bDVUCjI5Q2dJdkZDTTd3aExPUGdtVk9zc2tVQ2dZQnpwWjZGYXpVQldsVlNPbGtkUVhDakNLNTFNU2lubHlWd20vckoKOWlpOXlrWTdtLzBiRHlzbkFSb1pIb3gwRXB3NFRlVXBCbDYxVSs1RXFvbUFJRzZBT3oyQlB2UXVvM0YwRm1ESgpORU9lZHJiQUpiaGZhQ3IvU0JqZHNxUjNYK25kZExXa3hheXliQUh5bDhTR1FlNmJBaEluWVJFaElkY3MwVjA5CkY2WUNBUUtCZ1FEd2hqOG1JSGVsOUxNUmdRL2xQdHdpckEvWlNOaWJiVERieHhOZHdnaGp5T040eWZCbEpyemcKZDBUbkJOR21JMnlmRUQ3czF1alNkV25ya25YaEpWYk9WWlZxb2RxYnVTcHRwRUpwQzI3bnBrcHVYZUwvcWlnTgovQWx4VWxZT0sxYyt1c3I1N05VOFNweVFiMmw1Q3NCaWZyU005bWF0TmJrNWkxSHZaMVIvV3c9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=","protected":false}'
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: create ssh deploy key
+      uri:
+        url: http://gitlab/api/v4/projects/1/deploy_keys/
+        method: POST
+        body: '{"title": "My deploy key", "key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGb2MibVeV6Wf+UDwxebDrSurSKgdlZFwqd1GdtSWMSxUbGfPywjTNEEzjmM66RNHgNHD/0Y9/WYcBH/SF1ODGObxsI92q7iYJVju+cpeLae30k1p1M6BuugVgMQG9jO5i934f4F0vdyiKt/bIM2t6KuJpWg+qu0020YLZNSWFQF9D+iJmKbdF5ORRUl31Z7KhKkWrDxIBR8KxiN1uWJvHOHkR7RJ+fUENyt8/AFDKxZKrsCxTlnkDRABxuA80dSbbBF/+SQJw6rD8+B4P25qZqeM4wkVPz8qcwOe4Ya7EXff9JbKh1EgCQGHWgerUdU2hezohNAtrd35v4ozjWRL9", "can_push": "true"}'
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      delegate_to: localhost
+      when: readmedata.status == 303
+
     #clean gitlab
     - name: remove git config
       file: name="repo/.git" state=absent
@@ -140,5 +169,19 @@
       shell: git checkout -b feature-X-newthing && git push --set-upstream origin feature-X-newthing
       args:
         chdir: repo/
+      delegate_to: localhost
+      when: readmedata.status == 303
+
+    - name: create initial tag
+      uri:
+        url: http://gitlab/api/v4/projects/1/repository/tags
+        method: POST
+        body: '{"id": "Orchestration%2Frunnerproject", "tag_name": "1", "ref": "master"}'
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
       delegate_to: localhost
       when: readmedata.status == 303

@@ -4,10 +4,6 @@ services:
     build: gitlab
     hostname: gitlab
     container_name: gitlab
-    deploy:
-      resources:
-        limits:
-          memory: 1024M
     volumes:
       - ./gitlab/gitlab.rb:/etc/gitlab/gitlab.rb
     ports:
