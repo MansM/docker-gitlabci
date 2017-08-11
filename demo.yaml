@@ -12,23 +12,23 @@
       register: logindata
       delegate_to: localhost
 
-    # - name: create feature-X-newthing branch
-    #   shell: git checkout -b feature-X-newthing development && git push --set-upstream origin feature-X-newthing
-    #   args:
-    #     chdir: repo/
-    #   delegate_to: localhost
+    - name: create feature-X-newthing branch
+      shell: git checkout -b feature-X-newthing development && git push --set-upstream origin feature-X-newthing
+      args:
+        chdir: repo/
+      delegate_to: localhost
 
-    # - name: Add some new data in the new feature
-    #   shell: "echo 'new code' >> readme.md"
-    #   args:
-    #     chdir: repo/
-    #   delegate_to: localhost
+    - name: Add some new data in the new feature
+      shell: "echo 'new code' >> readme.md"
+      args:
+        chdir: repo/
+      delegate_to: localhost
 
-    # - name: commit the new feature
-    #   shell: git commit -am "awesome feature" && git push
-    #   args:
-    #     chdir: repo/
-    #   delegate_to: localhost
+    - name: commit the new feature
+      shell: git commit -am "awesome feature" && git push
+      args:
+        chdir: repo/
+      delegate_to: localhost
 
     - name: create merge request feature -> development
       uri:
