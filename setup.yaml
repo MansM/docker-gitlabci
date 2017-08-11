@@ -165,13 +165,6 @@
       delegate_to: localhost
       when: readmedata.status == 303
 
-    - name: create feature-X-newthing branch
-      shell: git checkout -b feature-X-newthing && git push --set-upstream origin feature-X-newthing
-      args:
-        chdir: repo/
-      delegate_to: localhost
-      when: readmedata.status == 303
-
     - name: create initial tag
       uri:
         url: http://gitlab/api/v4/projects/1/repository/tags
