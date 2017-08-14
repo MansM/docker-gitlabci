@@ -1,0 +1,93 @@
+- name: create release-endofsprintX branch
+      shell: git checkout development && git pull && git checkout -b release-endofsprintX development && git push --set-upstream origin release-endofsprintX
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: fixing a small thing in release branch
+      shell: "echo 'small fix' >> readme.md"
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: commit the new fix
+      shell: git commit -am "awesome fix" && git push
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: create merge request release -> development
+      uri:
+        url: http://gitlab/api/v4/projects/1/merge_requests
+        method: POST
+        body_format: json
+        body: 
+          id: "Orchestration%2Frunnerproject"
+          title: "release fix"
+          source_branch: "release-endofsprintX"
+          target_branch: "development"
+          remove_source_branch: false
+          squash: false
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      register: mrdata
+      delegate_to: localhost
+
+    - name: accept merge request release -> development
+      uri:
+        url: http://gitlab/api/v4/projects/1/merge_requests/{{ mrdata.json.iid }}/merge
+        method: PUT
+        body_format: json
+        body: 
+          id: "Orchestration%2Frunnerproject"
+          merge_request_iid:  "{{ mrdata.json.iid }}"
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      #register: mrdata
+      delegate_to: localhost
+
+    - name: create merge request release -> master
+      uri:
+        url: http://gitlab/api/v4/projects/1/merge_requests
+        method: POST
+        body_format: json
+        body: 
+          id: "Orchestration%2Frunnerproject"
+          title: "release end of sprint"
+          source_branch: "release-endofsprintX"
+          target_branch: "master"
+          remove_source_branch: false
+          squash: false
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      register: mrdata
+      delegate_to: localhost
+
+    - name: accept merge request release -> master
+      uri:
+        url: http://gitlab/api/v4/projects/1/merge_requests/{{ mrdata.json.iid }}/merge
+        method: PUT
+        body_format: json
+        body: 
+          id: "Orchestration%2Frunnerproject"
+          merge_request_iid:  "{{ mrdata.json.iid }}"
+        headers:
+          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
+          Content-Type: "application/json"
+        return_content: yes
+        follow_redirects: yes
+        status_code: 200,201
+      #register: mrdata
+      delegate_to: localhost

@@ -12,54 +12,8 @@
       register: logindata
       delegate_to: localhost
 
-    - name: create feature-X-newthing branch
-      shell: git checkout -b feature-X-newthing development && git push --set-upstream origin feature-X-newthing
-      args:
-        chdir: repo/
-      delegate_to: localhost
+    - name: include feature
+      include: demo/feature.yaml
 
-    - name: Add some new data in the new feature
-      shell: "echo 'new code' >> readme.md"
-      args:
-        chdir: repo/
-      delegate_to: localhost
-
-    - name: commit the new feature
-      shell: git commit -am "awesome feature" && git push
-      args:
-        chdir: repo/
-      delegate_to: localhost
-
-    - name: create merge request feature -> development
-      uri:
-        url: http://gitlab/api/v4/projects/1/merge_requests
-        method: POST
-        body: '{ "id": "Orchestration%2Frunnerproject", "title": "awesome feature", "source_branch": "feature-X-newthing", "target_branch": "development", "remove_source_branch": false, "squash": false }'
-        headers:
-          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
-          Content-Type: "application/json"
-        return_content: yes
-        follow_redirects: yes
-        status_code: 200,201
-      register: mrdata
-      delegate_to: localhost
-
-    - name: accept merge request feature -> development
-      uri:
-        url: http://gitlab/api/v4/projects/1/merge_requests/{{ mrdata.json.iid }}/merge
-        method: PUT
-        body_format: json
-        body: 
-          id: "Orchestration%2Frunnerproject"
-          merge_request_iid:  "{{ mrdata.json.iid }}"
-        headers:
-          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
-          Content-Type: "application/json"
-        return_content: yes
-        follow_redirects: yes
-        status_code: 200,201
-      #register: mrdata
-      delegate_to: localhost
-
-    - debug:
-        msg: "{{ mrdata }}"
+    - name: include release
+      include: demo/release.yaml
