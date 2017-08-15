@@ -15,8 +15,8 @@ ansible-playbook demo.yaml
 ```
 
 ## how to login:
-in your browser go to http://gitlab
-login with root:password
+* in your browser go to http://gitlab
+* login with root:password
 
 ## how to break it down
 docker-compose down
