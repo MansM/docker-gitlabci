@@ -16,40 +16,10 @@
         chdir: repo/
       delegate_to: localhost
 
-    - name: create merge request feature -> development
-      uri:
-        url: http://gitlab/api/v4/projects/1/merge_requests
-        method: POST
-        body_format: json
-        body: 
-          id: "Orchestration%2Frunnerproject"
-          title: "awesome feature"
-          source_branch: "feature-X-newthing"
-          target_branch: "development"
-          remove_source_branch: false
-          squash: false
-        headers:
-          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
-          Content-Type: "application/json"
-        return_content: yes
-        follow_redirects: yes
-        status_code: 200,201
-      register: mrdata
-      delegate_to: localhost
-
-    - name: accept merge request feature -> development
-      uri:
-        url: http://gitlab/api/v4/projects/1/merge_requests/{{ mrdata.json.iid }}/merge
-        method: PUT
-        body_format: json
-        body: 
-          id: "Orchestration%2Frunnerproject"
-          merge_request_iid:  "{{ mrdata.json.iid }}"
-        headers:
-          PRIVATE-TOKEN: "{{ logindata.json.private_token }}"
-          Content-Type: "application/json"
-        return_content: yes
-        follow_redirects: yes
-        status_code: 200,201
-      #register: mrdata
-      delegate_to: localhost
+    # - name: feature -> development
+    - include: includes/mergerequest.yaml 
+      vars:
+        title: awesome feature
+        source_branch: feature-X-newthing
+        target_branch: development
+        token: "{{ logindata.json.private_token }}"

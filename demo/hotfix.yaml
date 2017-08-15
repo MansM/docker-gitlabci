@@ -1,0 +1,33 @@
+    - name: create hotfix branch
+      shell: git checkout master && git pull && git checkout -b hotfix-oops master && git push --set-upstream origin hotfix-oops
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: fixing a small thing in release branch
+      shell: "echo 'small hotfix' >> readme.md"
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: commit the new fix
+      shell: git commit -am "awesome hotfix" && git push
+      args:
+        chdir: repo/
+      delegate_to: localhost
+
+    - name: hotfix -> master
+      include: includes/mergerequest.yaml 
+      vars:
+        title: fixing the oops thingy
+        source_branch: hotfix-oops
+        target_branch: master
+        token: "{{ logindata.json.private_token }}"
+
+    - name: hotfix -> development
+      include: includes/mergerequest.yaml 
+      vars:
+        title: fixing the oops thingy
+        source_branch: hotfix-oops
+        target_branch: development
+        token: "{{ logindata.json.private_token }}"

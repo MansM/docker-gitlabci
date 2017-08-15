@@ -17,3 +17,6 @@
 
     - name: include release
       include: demo/release.yaml
+
+    - name: include hotfix
+      include: demo/hotfix.yaml
