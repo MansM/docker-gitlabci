@@ -4,7 +4,7 @@ This is only for demo purposes and should NOT be used for any production stuff!!
 
 ## requirements
 * /etc/hosts:
-127.0.0.1	localhost gitlab
+  127.0.0.1  localhost gitlab
 * docker
 * ansible
 
